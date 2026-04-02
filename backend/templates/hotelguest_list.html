@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Hotelguests | NexusHospitality{% endblock %}
+{% block page_title %}Hotelguests{% endblock %}
+{% block content %}
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem">
+  <form class="search-bar" method="get" style="flex:1;margin-bottom:0">
+    <input type="text" name="search" value="{{ search }}" placeholder="Search hotelguests...">
+    <select name="status" onchange="this.form.submit()">
+      <option value="">All Loyalty Tier</option>
+      <option value="member" {% if status_filter == 'member' %}selected{% endif %}>Member</option>
+      <option value="silver" {% if status_filter == 'silver' %}selected{% endif %}>Silver</option>
+      <option value="gold" {% if status_filter == 'gold' %}selected{% endif %}>Gold</option>
+      <option value="platinum" {% if status_filter == 'platinum' %}selected{% endif %}>Platinum</option>
+    </select>
+    <button type="submit" class="btn btn-primary btn-sm">Search</button>
+  </form>
+  <a href="/hotelguests/create/" class="btn btn-primary">+ New HotelGuest</a>
+</div>
+
+<div class="card">
+  {% if records %}
+  <table>
+    <thead>
+      <tr><th>Name</th><th>Email</th><th>Phone</th><th>Nationality</th><th>Visits</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+      {% for r in records %}
+      <tr>
+        <td><a href="/hotelguests/{{ r.pk }}/edit/"><strong>{{ r.name }}</strong></a></td>
+        <td style="color:var(--muted)">{{ r.email|default:"-" }}</td>
+        <td>{{ r.phone|default:"-" }}</td>
+        <td>{{ r.nationality|default:"-" }}</td>
+        <td>{{ r.visits|default:"-" }}</td>
+        <td class="actions">
+          <a href="/hotelguests/{{ r.pk }}/edit/" class="btn btn-primary btn-sm">Edit</a>
+          <form method="post" action="/hotelguests/{{ r.pk }}/delete/" style="display:inline" onsubmit="return confirm('Delete?')">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-sm">Del</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty">
+    <p>No hotelguests found.</p>
+    <a href="/hotelguests/create/" class="btn btn-primary" style="margin-top:1rem">Create HotelGuest</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
